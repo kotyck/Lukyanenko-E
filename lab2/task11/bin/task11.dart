@@ -1,6 +1,7 @@
 import 'dart:io';
 
 void main(List<String> arguments) {
+  print('введите номер месяца:');
   var input = stdin.readLineSync() as String;
   switch(input){
     case '1': print('January'); break;
