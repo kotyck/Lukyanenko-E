@@ -6,6 +6,5 @@ void main(List<String> arguments) {
   var b = int.parse(stdin.readLineSync() ?? '0');
   print('введите сторону c:');
   var c = int.parse(stdin.readLineSync() ?? '0');
-  if(a*a+b*b == c*c){ print(true); }
-  else{ print(false); }
+  print (a*a+b*b == c*c);
 }
