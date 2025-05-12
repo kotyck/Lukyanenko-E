@@ -11,8 +11,8 @@ void main() {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
 
-              Image.asset(
-                "assets/images/kotik.jpg",
+              Image.network(
+                "https://i.pinimg.com/736x/64/ca/5f/64ca5f34cbe5f9eb7f6a3bf7a06410bd.jpg",
                 width: 500,
                 height: 500,
                 ),
