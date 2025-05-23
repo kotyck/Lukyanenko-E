@@ -1,15 +1,17 @@
-import 'dart:convert';
-import 'dart:io';
-import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:crypto/crypto.dart';
-import 'package:flutter/services.dart'; 
+import 'dart:convert'; //для конвертирования данных в нужную кодировку
+import 'dart:io'; //для ввода информации с текстовых полей
+import 'package:flutter/material.dart'; //для работы приложения
+import 'package:path_provider/path_provider.dart'; //для работы с путями 
+import 'package:crypto/crypto.dart'; //для хеширования паролей
+import 'package:flutter/services.dart';//для работы с буфером обмена
 
 void main() {
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -22,31 +24,37 @@ class MyApp extends StatelessWidget {
   }
 }
 
+//класс экрана входа
 class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
-
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends State<LoginScreen> { 
   final TextEditingController _passwordController = TextEditingController();
   String? masterPasswordHash;
 
-  Future<void> _loadMasterPassword() async {
+  //функция для чтения мастер-пароля
+  Future<void> _loadMasterPassword() async { 
     final directory = await getApplicationDocumentsDirectory();
     final file = File('${directory.path}/master_password.json');
-    if (await file.exists()!) {
+   if (await file.exists()) {
       String contents = await file.readAsString();
       masterPasswordHash = json.decode(contents)['hash'];
     }
   }
 
-    void _saveMasterPassword(String password) async {
+  //функция для записи мастер-пароля(активируется в том случае если он еще не задан)
+  void _saveMasterPassword(String password) async {
     final directory = await getApplicationDocumentsDirectory();
     final file = File('${directory.path}/master_password.json');
     await file.writeAsString(json.encode({'hash': _hashPassword(password)}));
   }
 
+  //функция для аутентификации
   void _login() {
+    _loadMasterPassword();
     if (masterPasswordHash == null) {
       _showSetMasterPasswordDialog();
     } 
@@ -64,7 +72,8 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-    void _showSetMasterPasswordDialog() {
+  //функция для диалогового окна, предназначенного для записи мастер-пароля
+  void _showSetMasterPasswordDialog() {
     showDialog(
       context: context,
       builder: (context) {
@@ -91,10 +100,6 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  String _hashPassword(String password) {
-    return sha256.convert(utf8.encode(password)).toString();
-  }
-
   @override
   Widget build(BuildContext context) {
     _loadMasterPassword();
@@ -114,6 +119,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 obscureText: true,
               ),
               SizedBox(height: 20),
+              
               ElevatedButton(
                 onPressed: _login,
                 child: Text('Войти'),
@@ -126,11 +132,18 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 }
 
+//функия для хэширования паролей
+String _hashPassword(String password) {
+  return sha256.convert(utf8.encode(password)).toString();
+}
+
+//класс экрана менеджера паролей
 class PasswordManagerScreen extends StatefulWidget {
+  const PasswordManagerScreen({super.key});
+
   @override
   _PasswordManagerScreenState createState() => _PasswordManagerScreenState();
 }
-
 class _PasswordManagerScreenState extends State<PasswordManagerScreen> {
   List<Map<String, dynamic>> _passwords = [];
 
@@ -140,8 +153,8 @@ class _PasswordManagerScreenState extends State<PasswordManagerScreen> {
     _loadPasswords();
   }
 
+  //функция для чтения всех локальных паролей 
   Future<void> _loadPasswords() async {
-
     final directory = await getApplicationDocumentsDirectory();
     final file = File('${directory.path}/passwords.json');
     if (await file.exists()) {
@@ -152,12 +165,14 @@ class _PasswordManagerScreenState extends State<PasswordManagerScreen> {
     }
   }
 
+  //функция дл сохранения всех локальных паролей
   Future<void> _savePasswords() async {
     final directory = await getApplicationDocumentsDirectory();
     final file = File('${directory.path}/passwords.json');
-    await file.writeAsString(json.encode(_passwords));
+    await file.writeAsString(json.encode((_passwords)));
   }
 
+  //функция для добавления нового пароля
   void _addPassword() {
     showDialog(
       context: context,
@@ -197,6 +212,7 @@ class _PasswordManagerScreenState extends State<PasswordManagerScreen> {
     );
   }
 
+  //функция для удаления пароля из памяти
   void _deletePassword(int index) {
     setState(() {
       _passwords.removeAt(index);
@@ -204,6 +220,7 @@ class _PasswordManagerScreenState extends State<PasswordManagerScreen> {
     });
   }
 
+  //функция для копирования пароля в буфер обмена
   void _copyPassword(String password) {
     Clipboard.setData(ClipboardData(text: password)).then((_) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Пароль скопирован в буфер обмена')));
@@ -215,7 +232,7 @@ class _PasswordManagerScreenState extends State<PasswordManagerScreen> {
       appBar: AppBar(
         title: Text('Менеджер паролей'),
         actions: [
-          IconButton(
+          IconButton( //кпонка для добавления нового пвроля
             onPressed: _addPassword, 
             icon: Icon(Icons.add),
             alignment: Alignment.center,
@@ -230,11 +247,11 @@ class _PasswordManagerScreenState extends State<PasswordManagerScreen> {
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                IconButton(
+                IconButton( //кнопка для копирования пароля в буфер обмена
                   icon: Icon(Icons.copy, color: Colors.blue),
                   onPressed: () => _copyPassword(_passwords[index]['password']!),
                 ),
-                IconButton(
+                IconButton( //кнопка для удавления пароля из памяти
                   icon: Icon(Icons.delete, color: Colors.red),
                   onPressed: () => _deletePassword(index),
                 ),
