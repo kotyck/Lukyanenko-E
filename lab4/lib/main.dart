@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 void main() {
   runApp(MaterialApp(
     home: Scaffold(
-      backgroundColor: Colors.lightBlueAccent,
+      backgroundColor: const Color.fromARGB(255, 223, 72, 193),
       body: ListView(
         padding: EdgeInsets.only(top: 200),
         children: [
@@ -11,21 +11,20 @@ void main() {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
 
-              Image.network(
-                "https://i.pinimg.com/736x/64/ca/5f/64ca5f34cbe5f9eb7f6a3bf7a06410bd.jpg",
-                width: 500,
-                height: 500,
+              Image.asset(
+                'assets/images/shailushai.jpg',
+                width: 400,
                 ),
             
               Text(
-                'okak',
+                'Шайлушай',
                 textDirection: TextDirection.ltr,
                 style: TextStyle(fontSize: 35),
               ),
             
-              SLWidget(pic: 'kotik5', txt: 'эвоно как...',),
+              SLWidget(pic: 'https://i.pinimg.com/736x/70/88/5b/70885bb8b00f3f978faed985614f83e9.jpg', txt: 'свага присутствует',),
 
-              SLWidget(pic: 'kotik6',txt: 'вот оно че...',),
+              SLWidget(pic: 'https://i.pinimg.com/736x/e9/7d/1d/e97d1d7ac8ac8396c0cc5ffba5fcc24b.jpg',txt: 'cakes',),
 
               SFWifget(),
             
@@ -41,7 +40,7 @@ void main() {
 class SLWidget extends StatelessWidget{
   final String pic;
   final String txt;
-  const SLWidget({this.pic = '',this.txt = '|empty|'});
+  const SLWidget({super.key, required this.pic, required this.txt});
 
   @override
   Widget build(BuildContext context) {
@@ -51,19 +50,19 @@ class SLWidget extends StatelessWidget{
       child: ConstrainedBox(
         constraints: BoxConstraints.tightFor(
           width: 500, 
-          height: 200
+          height: 400
         ),
 
-        child: Row(
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Image.asset(
-              'assets/images/${pic}.jpg',
+            Image.network(
+              pic,
               width: 200,
               height: 200,
             ),
             Text(
-              '${txt}', 
+              txt, 
               style: TextStyle(fontSize: 35),
             )
           ],
@@ -74,6 +73,8 @@ class SLWidget extends StatelessWidget{
 }
 
 class SFWifget extends StatefulWidget{
+  const SFWifget({super.key});
+
   @override
   SFWifgetState createState() => SFWifgetState();
 }
@@ -90,7 +91,7 @@ class SFWifgetState extends State<SFWifget>{
         value++;
       });}, 
       child: Text(
-        'клацнуто раз: ${value}',
+        'пикми: $value',
         style: TextStyle(fontSize: 24),  
       )
     );
